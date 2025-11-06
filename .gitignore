@@ -1,0 +1,25 @@
+# Backups
+backups/*.sql
+!backups/.gitkeep
+
+# Data exports
+data-exports/*
+!data-exports/.gitkeep
+
+# Docker volumes
+pgdata/
+
+# Environment files
+.env
+.env.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
