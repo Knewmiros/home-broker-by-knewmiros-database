@@ -1,5 +1,6 @@
 # Backups
 backups/*.sql
+backups/*.zip
 !backups/.gitkeep
 
 # Data exports
@@ -9,9 +10,16 @@ data-exports/*
 # Docker volumes
 pgdata/
 
-# Environment files
+# Environment files (NEVER commit production secrets!)
 .env
 .env.local
+.env.production
+.env.*.local
+
+# SSL Certificates
+*.crt
+*.key
+*.pem
 
 # OS files
 .DS_Store
@@ -23,3 +31,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Temporary files
+*.tmp
+*.temp

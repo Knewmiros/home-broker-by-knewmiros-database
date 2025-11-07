@@ -41,8 +41,12 @@ switch ($BackupType) {
         Write-Host "Creating schema-only backup..." -ForegroundColor Yellow
         docker compose exec postgres pg_dump -U postgres -d broker_db --schema-only > "backups\$BackupName.sql"
     }
+    "all" {
+        Write-Host "Creating FULL system backup (all databases + users + roles)..." -ForegroundColor Yellow
+        docker compose exec postgres pg_dumpall -U postgres > "backups\$BackupName.sql"
+    }
     default {
-        Write-Host "❌ Invalid backup type. Use: data, complete, or schema" -ForegroundColor Red
+        Write-Host "❌ Invalid backup type. Use: data, complete, schema, or all" -ForegroundColor Red
         exit 1
     }
 }

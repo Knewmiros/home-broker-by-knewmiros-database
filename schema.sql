@@ -173,3 +173,21 @@ CREATE TABLE builder_submission (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Create session table for storing express-session data
+CREATE TABLE session (
+  sid varchar NOT NULL COLLATE "default",
+  sess json NOT NULL,
+  expire timestamp(6) NOT NULL,
+  CONSTRAINT "session_pkey" PRIMARY KEY ("sid")
+);
+
+-- Create index on expire column for efficient cleanup of expired sessions
+CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON "session" ("expire");
+
+-- Grant permissions to broker_app user
+GRANT ALL PRIVILEGES ON TABLE "session" TO broker_app;
+GRANT ALL PRIVILEGES ON TABLE "session" TO postgres;
+-- Note: Application user (broker_app) is created by 02-create-app-user.sh
+-- This allows the password to come from environment variable BROKER_APP_PASSWORD
+
+

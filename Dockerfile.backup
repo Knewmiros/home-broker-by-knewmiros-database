@@ -1,0 +1,22 @@
+# Dockerfile for Railway Backup Cron Job
+FROM postgres:15-alpine
+
+# Install required tools
+RUN apk add --no-cache \
+    aws-cli \
+    bash \
+    gzip \
+    postgresql-client
+
+# Create backup directory
+RUN mkdir -p /backups
+
+# Copy backup script
+COPY backup-railway.sh /usr/local/bin/backup-railway.sh
+RUN chmod +x /usr/local/bin/backup-railway.sh
+
+# Set working directory
+WORKDIR /app
+
+# Default command (can be overridden in Railway)
+CMD ["/usr/local/bin/backup-railway.sh"]

@@ -1,24 +1,25 @@
-Write-Host "=== STANDALONE BROKER DATABASE STATUS ===" -ForegroundColor Green
+Write-Host "=== PRODUCTION DATABASE STATUS ===" -ForegroundColor Green
+Write-Host "⚠️  PRODUCTION ENVIRONMENT" -ForegroundColor Yellow
 
 # Container status
 Write-Host "`n🐳 Container Status:" -ForegroundColor Cyan
-docker compose ps
+docker compose -f docker-compose.prod.yaml ps
 
 # Volume status
 Write-Host "`n💾 Volume Status:" -ForegroundColor Cyan
 docker volume ls | Select-String "standalone_broker_pgdata"
 
 # Database connection test
-$containerRunning = docker compose ps --format json | ConvertFrom-Json | Where-Object { $_.State -eq "running" }
+$containerRunning = docker compose -f docker-compose.prod.yaml ps --format json | ConvertFrom-Json | Where-Object { $_.State -eq "running" }
 if ($containerRunning) {
     Write-Host "`n📊 Database Status:" -ForegroundColor Cyan
-    $dbTest = docker compose exec postgres pg_isready -U postgres -d broker_db 2>$null
+    $dbTest = docker compose -f docker-compose.prod.yaml exec postgres pg_isready -U postgres -d broker_db 2>$null
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Database is ready and accepting connections" -ForegroundColor Green
         
         # Show data counts
         Write-Host "`n📋 Current Data:" -ForegroundColor Cyan
-        docker compose exec postgres psql -U postgres -d broker_db -c "
+        docker compose -f docker-compose.prod.yaml exec postgres psql -U postgres -d broker_db -c "
         SELECT 'organisations' as table_name, COUNT(*) as count FROM organisations 
         UNION ALL SELECT 'users', COUNT(*) FROM users 
         UNION ALL SELECT 'job_data', COUNT(*) FROM job_data
@@ -41,24 +42,25 @@ if ($containerRunning) {
         Write-Host "❌ Database is not responding" -ForegroundColor Red
     }
 } else {
-    Write-Host "`n❌ Database container is not running" -ForegroundColor Red
-    Write-Host "Run .\start.ps1 to start the database" -ForegroundColor Yellow
+    Write-Host "`n❌ Production database container is not running" -ForegroundColor Red
+    Write-Host "Run .\start-prod.ps1 to start the production database" -ForegroundColor Yellow
 }
 
-Write-Host "`n🔗 Connection Info:" -ForegroundColor Cyan
-# Load .env file
-$envVars = @{}
+# Load and display connection info
 if (Test-Path ".env") {
+    $envVars = @{}
     Get-Content ".env" | ForEach-Object {
         if ($_ -match '^([^=]+)=(.+)$') {
             $envVars[$matches[1]] = $matches[2]
         }
     }
+    
+    Write-Host "`n🔗 Connection Info:" -ForegroundColor Cyan
+    Write-Host "   Host: localhost"
+    Write-Host "   Port: $($envVars['PORT'] -replace ':.*','')"
+    Write-Host "   Database: $($envVars['POSTGRES_DB'])"
+    Write-Host "   Admin User: $($envVars['POSTGRES_USER'])"
+    Write-Host "   App User: broker_app"
 }
-Write-Host "   Host: localhost"
-Write-Host "   Port: $($envVars['PORT'] -replace ':.*','')"
-Write-Host "   Database: $($envVars['POSTGRES_DB'])"
-Write-Host "   Username: $($envVars['POSTGRES_USER'])"
-# Write-Host "   Password: $($envVars['POSTGRES_PASSWORD'])"
 
 Write-Host "`n=== STATUS COMPLETE ===" -ForegroundColor Green
