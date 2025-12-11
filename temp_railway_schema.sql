@@ -68,7 +68,7 @@ CREATE TABLE job_data (
     buyer2_notes TEXT,
     investor_client BOOLEAN,
     min_budget NUMERIC,
-    max_buget NUMERIC,
+    max_budget NUMERIC,
     address TEXT,
     suburb VARCHAR(100),
     postcode VARCHAR(20),
@@ -81,7 +81,7 @@ CREATE TABLE job_data (
     coastal VARCHAR(50),
     noise_required BOOLEAN,
     accessible_site VARCHAR(100),
-    titled BOOLEAN
+    titled BOOLEAN,
     land_type VARCHAR(100),
     services_water BOOLEAN,
     services_sewer BOOLEAN,
@@ -140,7 +140,7 @@ CREATE TABLE request_content (
 
 -- CREATE TABLE buyer_details (
 --     id SERIAL PRIMARY KEY,
---     job_id INTEGER REFERENCES job_data(id) ON DELETE CASCADE,
+--     -- job_id INTEGER REFERENCES job_data(id) ON DELETE CASCADE,
 --     buyer_name VARCHAR(255) NOT NULL,
 --     buyer_email VARCHAR(255) NOT NULL,
 --     buyer_phone VARCHAR(100),
@@ -156,9 +156,9 @@ CREATE TABLE uploaded_files (
   id SERIAL PRIMARY KEY,
   job_id INTEGER REFERENCES job_data(id) ON DELETE CASCADE,
   list_name VARCHAR(255) NOT NULL,
-  filename VARCHAR(500) NOT NULL,
-  original_name VARCHAR(500) NOT NULL,
-  path TEXT NOT NULL,
+  filename VARCHAR(255) NOT NULL,
+  original_name VARCHAR(255) NOT NULL,
+  path VARCHAR(500) NOT NULL,
   size INT NOT NULL,
   mimetype VARCHAR(100) NOT NULL,   
   uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -176,9 +176,9 @@ CREATE TABLE builder_submission (
     price NUMERIC,
     notes TEXT,
     quote_accepted BOOLEAN DEFAULT FALSE,
-    quote_filename VARCHAR(500),
-    quote_original_name VARCHAR(500),
-    quote_file_path TEXT,
+    quote_filename VARCHAR(255),
+    quote_original_name VARCHAR(255),
+    quote_file_path VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

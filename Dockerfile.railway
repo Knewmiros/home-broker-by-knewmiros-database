@@ -1,0 +1,24 @@
+# Dockerfile for Railway PostgreSQL deployment
+# Note: Railway provides managed PostgreSQL, this is only if you need custom setup
+
+FROM postgres:15-alpine
+
+# Copy initialization scripts
+COPY schema.sql /docker-entrypoint-initdb.d/01-schema.sql
+COPY scripts/02-create-app-user.sh /docker-entrypoint-initdb.d/02-create-app-user.sh
+
+# Set permissions for init scripts
+RUN chmod +x /docker-entrypoint-initdb.d/02-create-app-user.sh
+
+# PostgreSQL configuration
+ENV POSTGRES_INITDB_ARGS="--encoding=UTF8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8"
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+  CMD pg_isready -U $POSTGRES_USER -d $POSTGRES_DB || exit 1
+
+# Note: Railway sets PORT automatically, PostgreSQL uses 5432 internally
+EXPOSE 5432
+
+# Use default postgres entrypoint
+# Railway will provide environment variables

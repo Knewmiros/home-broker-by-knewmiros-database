@@ -1,0 +1,1 @@
+ALTER TABLE job_data RENAME COLUMN budget TO min_budget;
